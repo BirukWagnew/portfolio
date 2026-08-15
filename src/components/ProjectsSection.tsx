@@ -6,13 +6,7 @@ import { ProjectModal } from './ProjectModal';
 import { GithubIcon } from './Icons';
 
 export const ProjectsSection: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<'All' | 'Cloud & DevOps' | 'Full-Stack'>('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-
-  const filteredProjects = PROJECTS.filter((p) => {
-    if (activeCategory === 'All') return true;
-    return p.category === activeCategory;
-  });
 
   return (
     <section id="projects" className="py-20 bg-[#090d16]/90 relative border-t border-gray-800/60">
@@ -32,26 +26,9 @@ export const ProjectsSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          {(['All', 'Cloud & DevOps', 'Full-Stack'] as const).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-xl text-xs font-semibold font-mono transition-all duration-200 ${
-                activeCategory === cat
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/30'
-                  : 'bg-gray-900 border border-gray-800 text-gray-400 hover:text-white hover:border-gray-700'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
-          {filteredProjects.map((project) => (
+        <div className="max-w-lg mx-auto text-left">
+          {PROJECTS.map((project) => (
             <div
               key={project.id}
               className="glass-card glass-card-hover rounded-2xl border border-gray-800/80 overflow-hidden flex flex-col justify-between group"

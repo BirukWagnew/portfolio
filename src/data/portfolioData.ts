@@ -127,66 +127,17 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
 
 export const PROJECTS: Project[] = [
   {
-    id: "ai-portfolio",
-    title: "AI Portfolio Website",
-    description: "Personal responsive portfolio built with React, TypeScript, Tailwind CSS, and AI-driven dynamic showcases.",
-    longDescription: "An state-of-the-art interactive developer portfolio showcasing full-stack capabilities, cloud architecture projects, and AI integrations with seamless dark mode and smooth animations.",
-    tags: ["React", "TypeScript", "Tailwind CSS", "Vite", "AI Integration"],
-    category: "Full-Stack",
-    image: "/projects/ai_portfolio.jpg",
-    githubUrl: "https://github.com/BirukWagnew",
-    liveUrl: "https://birukwagnew.dev",
-    featured: true,
-    highlights: ["Interactive UI with Tailwind", "Optimized Lighthouse 98+ Performance", "Dark Glassmorphism Design"]
-  },
-  {
     id: "ahadu-elearning",
     title: "Ahadu E-Learning Platform",
     description: "A feature-rich web platform empowering students and educators with interactive courses and assessment tools.",
     longDescription: "Designed and built scalable back-end microservices and interactive front-end components for online learning, quiz engines, and real-time student progress tracking.",
     tags: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
     category: "Full-Stack",
-    image: "/projects/ahadu_elearning.jpg",
+    image: "/projects/ahadu_elearning.png",
     githubUrl: "https://github.com/BirukWagnew/Ahadulearning",
     liveUrl: "https://ahadu-elearning.demo",
     featured: true,
     highlights: ["Real-time progress analytics", "Role-based access control", "Responsive video & quiz player"]
-  },
-  {
-    id: "cloud-file-upload",
-    title: "Cloud File Upload Application",
-    description: "High-performance file storage service leveraging GCP S3 bucket APIs, Docker containers, and CI/CD automated deployments.",
-    longDescription: "Engineered a secure, cloud-native file storage system that handles chunked multi-file uploads with automated virus scanning and encrypted access links.",
-    tags: ["GCP", "AWS", "Docker", "Node.js", "CI/CD"],
-    category: "Cloud & DevOps",
-    image: "/projects/cloud_file_upload.jpg",
-    githubUrl: "https://github.com/BirukWagnew",
-    featured: true,
-    highlights: ["Chunked parallel upload engine", "Automated GCP Cloud Run deployment", "Dockerized microservices"]
-  },
-  {
-    id: "fellowship-management",
-    title: "Fellowship Management Website",
-    description: "Comprehensive portal for community engagement, event management, and member directory administration.",
-    longDescription: "Built an intuitive management platform enabling organizational leaders to coordinate events, publish announcements, and track member statistics.",
-    tags: ["TypeScript", "React", "PostgreSQL", "Tailwind CSS"],
-    category: "Full-Stack",
-    image: "/projects/fellowship_mgmt.jpg",
-    githubUrl: "https://github.com/BirukWagnew",
-    featured: true,
-    highlights: ["Member administration module", "Calendar event synchronization", "Custom reporting engine"]
-  },
-  {
-    id: "linux-cloud-projects",
-    title: "Linux & Cloud Infrastructure Labs",
-    description: "Collection of automated Infrastructure as Code (IaC) scripts, Kubernetes deployment manifests, and Linux automation tasks.",
-    longDescription: "Hands-on implementation of container orchestration, bash automation scripts, Nginx reverse proxy configurations, and hardened Linux server setups.",
-    tags: ["Linux", "Bash", "Kubernetes", "Docker", "Git"],
-    category: "Cloud & DevOps",
-    image: "/projects/cloud_file_upload.jpg",
-    githubUrl: "https://github.com/BirukWagnew",
-    featured: false,
-    highlights: ["Kubernetes Cluster configuration", "Automated Bash deployment scripts", "Linux server security hardening"]
   }
 ];
 

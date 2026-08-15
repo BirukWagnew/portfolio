@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Cloud, Mail, Terminal } from 'lucide-react';
+import { Menu, X, Cloud, Mail, Terminal, Sun, Moon } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
 import { GithubIcon, LinkedinIcon } from './Icons';
+import { useTheme } from '../ThemeContext';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
     { name: 'About', href: '#about' },
@@ -90,8 +92,33 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Social Quick Links & Action */}
+          {/* Social Quick Links, Theme Toggle & Action */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="relative p-2.5 rounded-xl bg-gray-900/80 border border-gray-800 text-gray-400 hover:text-amber-400 hover:border-amber-500/50 hover:bg-gray-800 transition-all duration-300 overflow-hidden cursor-pointer"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle theme"
+            >
+              <div className="relative w-4 h-4">
+                <Sun
+                  className={`w-4 h-4 absolute inset-0 transition-all duration-300 ${
+                    theme === 'light'
+                      ? 'opacity-100 rotate-0 scale-100 text-amber-500'
+                      : 'opacity-0 rotate-90 scale-50'
+                  }`}
+                />
+                <Moon
+                  className={`w-4 h-4 absolute inset-0 transition-all duration-300 ${
+                    theme === 'dark'
+                      ? 'opacity-100 rotate-0 scale-100 text-indigo-400'
+                      : 'opacity-0 -rotate-90 scale-50'
+                  }`}
+                />
+              </div>
+            </button>
+
             <a
               href={PERSONAL_INFO.socials.github}
               target="_blank"
@@ -119,14 +146,30 @@ export const Navbar: React.FC = () => {
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile: Theme Toggle + Menu Button */}
+          <div className="flex md:hidden items-center gap-2">
+            {/* Mobile Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-amber-400 focus:outline-none transition-all duration-300 cursor-pointer"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? (
+                <Moon className="w-5 h-5 text-indigo-400" />
+              ) : (
+                <Sun className="w-5 h-5 text-amber-500" />
+              )}
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white focus:outline-none cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 

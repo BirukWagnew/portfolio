@@ -17,6 +17,13 @@ export const ContactSection: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.message) return;
+
+    const subject = encodeURIComponent(`Portfolio Contact from ${formData.name || 'Someone'}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
+    );
+    window.open(`mailto:${PERSONAL_INFO.email}?subject=${subject}&body=${body}`, '_self');
+
     setFormSubmitted(true);
     setTimeout(() => {
       setFormSubmitted(false);
