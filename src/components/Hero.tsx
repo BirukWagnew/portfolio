@@ -123,9 +123,16 @@ export const Hero: React.FC = () => {
                 </p>
                 <p className="text-purple-400">{'}'};</p>
 
-                <div className="pt-3 border-t border-gray-800/60 text-gray-400 flex items-center gap-2">
-                  <span className="text-indigo-400">$</span>
-                  <span className="text-gray-200 animate-pulse">kubectl apply -f profile.yaml</span>
+                <div className="pt-3 border-t border-gray-800/60 text-gray-400 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-indigo-400">$</span>
+                    <span className="text-gray-200">kubectl apply -f profile.yaml</span>
+                  </div>
+                  <div className="text-emerald-400 text-[11px] font-mono leading-relaxed pl-4 animate-fadeIn">
+                    deployment.apps/biruk-wagnew-profile created<br />
+                    service/biruk-wagnew-service created<br />
+                    ingress.networking.k8s.io/portfolio-ingress created
+                  </div>
                 </div>
               </div>
             </div>

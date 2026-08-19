@@ -6,6 +6,9 @@ import { GithubIcon, LinkedinIcon, TwitterIcon, MediumIcon, DevToIcon } from './
 export const ContactSection: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submittedEmail, setSubmittedEmail] = useState('');
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   const handleCopyEmail = () => {
@@ -14,21 +17,59 @@ export const ContactSection: React.FC = () => {
     setTimeout(() => setCopied(false), 3000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.message) return;
 
-    const subject = encodeURIComponent(`Portfolio Contact from ${formData.name || 'Someone'}`);
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
-    );
-    window.open(`mailto:${PERSONAL_INFO.email}?subject=${subject}&body=${body}`, '_self');
+    setSubmitError(null);
+    setSubmittedEmail(formData.email);
 
-    setFormSubmitted(true);
-    setTimeout(() => {
-      setFormSubmitted(false);
-      setFormData({ name: '', email: '', message: '' });
-    }, 5000);
+    // If Web3Forms API Key is set and not the default placeholder, use the background fetch API
+    if (PERSONAL_INFO.web3formsKey && PERSONAL_INFO.web3formsKey !== "YOUR_WEB3FORMS_ACCESS_KEY") {
+      setSubmitting(true);
+      try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: PERSONAL_INFO.web3formsKey,
+            name: formData.name,
+            email: formData.email,
+            message: formData.message,
+            subject: `Portfolio Contact from ${formData.name || 'Someone'}`,
+            from_name: "Portfolio Site",
+          }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          setFormSubmitted(true);
+          setFormData({ name: '', email: '', message: '' });
+          setTimeout(() => setFormSubmitted(false), 6000);
+        } else {
+          throw new Error(data.message || "Failed to send message. Please try again.");
+        }
+      } catch (err: any) {
+        setSubmitError(err.message || "Something went wrong. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
+    } else {
+      // Fallback: Mailto client if key is missing/placeholder
+      const subject = encodeURIComponent(`Portfolio Contact from ${formData.name || 'Someone'}`);
+      const body = encodeURIComponent(
+        `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
+      );
+      window.open(`mailto:${PERSONAL_INFO.email}?subject=${subject}&body=${body}`, '_self');
+      setFormSubmitted(true);
+      setTimeout(() => {
+        setFormSubmitted(false);
+        setFormData({ name: '', email: '', message: '' });
+      }, 5000);
+    }
   };
 
   return (
@@ -153,11 +194,16 @@ export const ContactSection: React.FC = () => {
                 <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
                 <h4 className="text-xl font-bold text-white">Thank You!</h4>
                 <p className="text-sm text-emerald-200">
-                  Your message has been logged. Biruk will respond shortly at <span className="underline">{formData.email || 'your email'}</span>.
+                  Your message has been successfully sent. Biruk will respond shortly at <span className="underline">{submittedEmail || 'your email'}</span>.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {submitError && (
+                  <div className="p-4 rounded-xl bg-red-950/40 border border-red-500/40 text-red-200 text-sm">
+                    {submitError}
+                  </div>
+                )}
                 <div>
                   <label className="block text-xs font-mono text-gray-300 mb-1.5">Your Name</label>
                   <input
@@ -196,10 +242,20 @@ export const ContactSection: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2"
+                  disabled={submitting}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Submit Message</span>
+                  {submitting ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Sending Message...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Submit Message</span>
+                    </>
+                  )}
                 </button>
               </form>
             )}

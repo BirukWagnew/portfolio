@@ -46,6 +46,7 @@ export const PERSONAL_INFO = {
   website: "https://birukwagnew.dev",
   resumeUrl: "#resume", // PDF Download placeholder / action
   callToAction: "I'm currently seeking opportunities in Cloud Engineering, DevOps, and Full-Stack Development. Let's build something amazing together.",
+  web3formsKey: "YOUR_WEB3FORMS_ACCESS_KEY", // Get a free access key from https://web3forms.com/
   socials: {
     github: "https://github.com/BirukWagnew",
     linkedin: "https://et.linkedin.com/in/birukwagnew",
