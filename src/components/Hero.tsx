@@ -124,10 +124,9 @@ export const Hero: React.FC = () => {
                 <p className="text-purple-400">{'}'};</p>
 
                 <div className="pt-3 border-t border-gray-800/60 text-gray-400 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-indigo-400">$</span>
-                    <span className="text-gray-200">kubectl apply -f profile.yaml</span>
-                  </div>
+                  <p className="text-gray-200">
+                    <span className="text-indigo-400">$</span> kubectl apply -f profile.yaml
+                  </p>
                   <div className="text-emerald-400 text-[11px] font-mono leading-relaxed pl-4 animate-fadeIn">
                     deployment.apps/biruk-wagnew-profile created<br />
                     service/biruk-wagnew-service created<br />
