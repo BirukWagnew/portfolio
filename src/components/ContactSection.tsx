@@ -157,15 +157,11 @@ export const ContactSection: React.FC = () => {
             </div>
 
             {/* Social Links Bar */}
-            <div className="pt-4 space-y-3">
-              <div className="text-xs font-mono text-gray-400 uppercase tracking-wider">Connect Across Platforms</div>
+            <div className="pt-4">
               <div className="flex flex-wrap gap-3">
                 {[
                   { name: 'GitHub', icon: <GithubIcon className="w-4 h-4" />, url: PERSONAL_INFO.socials.github },
-                  { name: 'LinkedIn', icon: <LinkedinIcon className="w-4 h-4" />, url: PERSONAL_INFO.socials.linkedin },
-                  { name: 'Twitter / X', icon: <TwitterIcon className="w-4 h-4" />, url: PERSONAL_INFO.socials.twitter },
-                  { name: 'Medium', icon: <MediumIcon className="w-4 h-4" />, url: PERSONAL_INFO.socials.medium },
-                  { name: 'Dev.to', icon: <DevToIcon className="w-4 h-4" />, url: PERSONAL_INFO.socials.devto }
+                  { name: 'LinkedIn', icon: <LinkedinIcon className="w-4 h-4" />, url: PERSONAL_INFO.socials.linkedin }
                 ].map((s) => (
                   <a
                     key={s.name}

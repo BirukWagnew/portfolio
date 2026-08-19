@@ -49,10 +49,7 @@ export const PERSONAL_INFO = {
   web3formsKey: "YOUR_WEB3FORMS_ACCESS_KEY", // Get a free access key from https://web3forms.com/
   socials: {
     github: "https://github.com/BirukWagnew",
-    linkedin: "https://et.linkedin.com/in/birukwagnew",
-    twitter: "https://x.com/BirukWagnew",
-    medium: "https://medium.com/@BirukWagnew",
-    devto: "https://dev.to/BirukWagnew"
+    linkedin: "https://et.linkedin.com/in/birukwagnew"
   }
 };
 
