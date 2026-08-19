@@ -22,9 +22,9 @@ function readInitialTheme(): Theme {
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved === 'dark' || saved === 'light') return saved;
   } catch {
-    /* storage blocked — fall through to the media query */
+    /* storage blocked — fall back to the default theme */
   }
-  return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  return 'dark';
 }
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
