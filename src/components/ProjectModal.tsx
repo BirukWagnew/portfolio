@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, ExternalLink, CheckCircle2, Tag } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { Check, ExternalLink, X } from 'lucide-react';
 import type { Project } from '../data/portfolioData';
 import { GithubIcon } from './Icons';
 
@@ -9,107 +9,135 @@ interface ProjectModalProps {
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!project) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    document.body.style.overflow = 'hidden';
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      );
+      if (!focusables || focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = '';
+      previouslyFocused?.focus();
+    };
+  }, [project, onClose]);
+
   if (!project) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div
+      className="fixed inset-0 z-100 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-6"
+      onClick={onClose}
+    >
       <div
-        className="glass-card rounded-2xl border border-gray-800 w-full max-w-3xl overflow-hidden shadow-2xl relative text-left my-8 max-h-[90vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-modal-title"
+        onClick={(event) => event.stopPropagation()}
+        className="animate-[rise_0.35s_var(--ease-smooth)] max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl border border-[var(--hairline)] bg-[var(--surface-solid)] shadow-[var(--shadow-lift)] sm:rounded-2xl"
       >
-        {/* Modal Header Bar */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-800 bg-gray-900/60">
-          <div>
-            <span className="text-xs font-mono text-indigo-400 uppercase tracking-widest">{project.category}</span>
-            <h3 className="text-2xl font-bold text-white">{project.title}</h3>
-          </div>
+        <div className="relative aspect-16/9 overflow-hidden border-b border-[var(--hairline)]">
+          <img
+            src={project.image}
+            alt={project.imageAlt}
+            className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
           <button
+            ref={closeRef}
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+            aria-label="Close project details"
+            className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-lg border border-[var(--hairline)] bg-[color-mix(in_srgb,var(--bg-base)_80%,transparent)] text-body backdrop-blur transition-colors hover:text-accent"
           >
-            <X className="w-5 h-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Modal Content Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
-          {/* Image Banner */}
-          <div className="relative rounded-xl overflow-hidden border border-gray-800 aspect-video bg-gray-900">
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+        <div className="p-6 sm:p-7">
+          <p className="font-mono text-[0.68rem] uppercase tracking-widest text-accent">
+            {project.category}
+            {project.status ? ` · ${project.status}` : ''}
+          </p>
+          <h3 id="project-modal-title" className="mt-2 text-2xl font-semibold">
+            {project.title}
+          </h3>
+          <p className="mt-4 text-sm leading-relaxed text-body">{project.longDescription}</p>
 
-          {/* Detailed Description */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-gray-300 uppercase tracking-wider font-mono">Overview</h4>
-            <p className="text-gray-300 text-base leading-relaxed">
-              {project.longDescription}
-            </p>
-          </div>
+          <h4 className="mt-6 font-mono text-[0.68rem] uppercase tracking-widest text-dim">
+            Highlights
+          </h4>
+          <ul className="mt-3 grid gap-2">
+            {project.highlights.map((highlight) => (
+              <li key={highlight} className="flex gap-2.5 text-sm text-body">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+                {highlight}
+              </li>
+            ))}
+          </ul>
 
-          {/* Key Highlights */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-gray-300 uppercase tracking-wider font-mono">Key Architectural Features</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {project.highlights.map((h, i) => (
-                <div key={i} className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-900/80 border border-gray-800 text-xs text-gray-300">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-400 flex-shrink-0" />
-                  <span>{h}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <li key={tag} className="chip">
+                {tag}
+              </li>
+            ))}
+          </ul>
 
-          {/* Tech Stack Tags */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-gray-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
-              <Tag className="w-4 h-4 text-pink-400" />
-              <span>Technologies Used</span>
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 rounded-lg bg-indigo-950/60 border border-indigo-500/30 text-indigo-200 text-xs font-mono"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Modal Footer Actions */}
-        <div className="p-6 border-t border-gray-800 bg-gray-900/60 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium flex items-center gap-2 transition-colors border border-gray-700"
-            >
-              <GithubIcon className="w-4 h-4" /> Source Code
-            </a>
+          <div className="mt-7 flex flex-wrap gap-3 border-t border-[var(--hairline)] pt-6">
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="btn btn-secondary"
+              >
+                <GithubIcon className="h-4 w-4" />
+                View source
+              </a>
+            )}
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
                 target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-medium flex items-center gap-2 shadow-md shadow-indigo-600/30 transition-transform hover:scale-105"
+                rel="noreferrer noopener"
+                className="btn btn-primary"
               >
-                <ExternalLink className="w-4 h-4" /> Live Demo
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                Live demo
               </a>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-gray-900 border border-gray-800 text-gray-400 text-xs hover:text-white"
-          >
-            Close Window
-          </button>
         </div>
       </div>
     </div>
