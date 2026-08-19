@@ -1,129 +1,167 @@
-import React, { useState } from 'react';
-import { Rocket, ExternalLink, ArrowUpRight } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { ArrowUpRight, ExternalLink } from 'lucide-react';
 import { PROJECTS } from '../data/portfolioData';
 import type { Project } from '../data/portfolioData';
 import { ProjectModal } from './ProjectModal';
+import { SectionHeading } from './SectionHeading';
+import { Reveal } from './Reveal';
+import { TiltCard } from './TiltCard';
 import { GithubIcon } from './Icons';
 
+const FILTERS = ['All', 'Cloud & DevOps', 'Full-Stack'] as const;
+type Filter = (typeof FILTERS)[number];
+
 export const ProjectsSection: React.FC = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [filter, setFilter] = useState<Filter>('All');
+  const [selected, setSelected] = useState<Project | null>(null);
+
+  const projects = useMemo(
+    () => (filter === 'All' ? PROJECTS : PROJECTS.filter((p) => p.category === filter)),
+    [filter],
+  );
 
   return (
-    <section id="projects" className="py-20 bg-[#090d16]/90 relative border-t border-gray-800/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="text-center space-y-3 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-950/60 border border-pink-500/30 text-pink-300 text-xs font-mono">
-            <Rocket className="w-3.5 h-3.5" />
-            <span>Featured Work</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Featured <span className="text-gradient-primary">Projects</span>
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto text-base">
-            Scalable cloud infrastructure, full-stack applications, and interactive digital solutions.
-          </p>
-        </div>
+    <section id="projects" className="section divider-top">
+      <div className="container-page">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <SectionHeading
+            eyebrow="Projects"
+            title={
+              <>
+                Things I have <span className="text-gold-gradient">built and shipped</span>
+              </>
+            }
+            description="Full-stack products and the infrastructure work around them."
+          />
 
-        {/* Projects Grid */}
-        <div className="max-w-lg mx-auto text-left">
-          {PROJECTS.map((project) => (
+          <Reveal delay={80}>
             <div
-              key={project.id}
-              className="glass-card glass-card-hover rounded-2xl border border-gray-800/80 overflow-hidden flex flex-col justify-between group"
+              role="tablist"
+              aria-label="Filter projects by category"
+              className="flex flex-wrap gap-2"
             >
-              <div>
-                {/* Image Banner */}
-                <div className="relative aspect-video overflow-hidden bg-gray-900 border-b border-gray-800/80">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-transparent to-transparent opacity-80" />
-                  
-                  {/* Category Tag Overlay */}
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-gray-900/90 backdrop-blur-md border border-gray-700 text-indigo-300 text-[11px] font-mono">
-                    {project.category}
-                  </span>
-                </div>
-
-                {/* Card Body */}
-                <div className="p-6 space-y-3">
-                  <h3
-                    onClick={() => setSelectedProject(project)}
-                    className="text-xl font-bold text-white group-hover:text-indigo-300 cursor-pointer transition-colors flex items-center justify-between"
-                  >
-                    <span>{project.title}</span>
-                    <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover:text-indigo-400 transition-colors" />
-                  </h3>
-
-                  <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
-                    {project.description}
-                  </p>
-
-                  {/* Tech Badges */}
-                  <div className="flex flex-wrap gap-1.5 pt-2">
-                    {project.tags.slice(0, 4).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2.5 py-0.5 rounded-md bg-gray-900 border border-gray-800 text-gray-300 text-[11px] font-mono"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {project.tags.length > 4 && (
-                      <span className="px-2 py-0.5 text-[11px] font-mono text-gray-500">
-                        +{project.tags.length - 4} more
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Card Footer Links */}
-              <div className="p-6 pt-0 border-t border-gray-800/40 mt-4 flex items-center justify-between">
+              {FILTERS.map((option) => (
                 <button
-                  onClick={() => setSelectedProject(project)}
-                  className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 font-mono flex items-center gap-1"
+                  key={option}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === option}
+                  onClick={() => setFilter(option)}
+                  className={`rounded-full border px-3.5 py-1.5 font-mono text-[0.7rem] transition-colors ${
+                    filter === option
+                      ? 'border-[var(--hairline-strong)] bg-[var(--accent-soft)] text-accent'
+                      : 'border-[var(--hairline)] text-body hover:text-strong'
+                  }`}
                 >
-                  View Details & Specs →
+                  {option}
                 </button>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-lg bg-gray-900 border border-gray-800 text-gray-400 hover:text-white hover:border-gray-700 transition-colors"
-                    title="Source Code"
-                  >
-                    <GithubIcon className="w-4 h-4" />
-                  </a>
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 rounded-lg bg-indigo-950 border border-indigo-500/40 text-indigo-300 hover:text-white hover:bg-indigo-600 transition-colors"
-                      title="Live Demo"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  )}
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </Reveal>
         </div>
 
-        {/* Project Detail Modal */}
-        <ProjectModal
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
+        <ul className="mt-12 grid gap-6 md:grid-cols-2">
+          {projects.map((project, index) => (
+            <Reveal as="li" key={project.id} delay={index * 70}>
+              <TiltCard intensity={4} className="h-full">
+                <article className="card flex h-full flex-col overflow-hidden">
+                  <div className="relative aspect-16/10 overflow-hidden border-b border-[var(--hairline)] bg-[var(--bg-sunken)]">
+                    <img
+                      src={project.image}
+                      alt={project.imageAlt}
+                      loading="lazy"
+                      decoding="async"
+                      width={800}
+                      height={500}
+                      className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.04]"
+                    />
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-base)] via-transparent to-transparent opacity-70"
+                    />
+                    <div className="absolute left-3 top-3 flex gap-2">
+                      <span className="rounded-full border border-[var(--hairline)] bg-[color-mix(in_srgb,var(--bg-base)_75%,transparent)] px-2.5 py-1 font-mono text-[0.65rem] text-body backdrop-blur">
+                        {project.category}
+                      </span>
+                      {project.status && (
+                        <span className="rounded-full border border-[var(--hairline-strong)] bg-[var(--accent-soft)] px-2.5 py-1 font-mono text-[0.65rem] text-accent backdrop-blur">
+                          {project.status}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="text-lg font-semibold">
+                      <button
+                        type="button"
+                        onClick={() => setSelected(project)}
+                        className="group inline-flex items-center gap-1.5 text-left transition-colors hover:text-accent"
+                        aria-haspopup="dialog"
+                      >
+                        {project.title}
+                        <ArrowUpRight
+                          className="h-4 w-4 text-dim transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </h3>
+
+                    <p className="mt-2 text-sm leading-relaxed text-body">
+                      {project.description}
+                    </p>
+
+                    <ul className="mt-4 flex flex-wrap gap-1.5">
+                      {project.tags.map((tag) => (
+                        <li
+                          key={tag}
+                          className="rounded-md border border-[var(--hairline)] px-2 py-0.5 font-mono text-[0.65rem] text-dim"
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-6 flex items-center gap-2 border-t border-[var(--hairline)] pt-4">
+                      <button
+                        type="button"
+                        onClick={() => setSelected(project)}
+                        className="btn btn-ghost px-2 text-xs"
+                      >
+                        Details
+                      </button>
+                      <span className="flex-1" />
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          aria-label={`${project.title} source on GitHub`}
+                          className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--hairline)] text-body transition-colors hover:border-[var(--hairline-strong)] hover:text-accent"
+                        >
+                          <GithubIcon className="h-4 w-4" />
+                        </a>
+                      )}
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          aria-label={`${project.title} live demo`}
+                          className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--hairline-strong)] bg-[var(--accent-soft)] text-accent transition-colors hover:brightness-125"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </ul>
+
+        <ProjectModal project={selected} onClose={() => setSelected(null)} />
       </div>
     </section>
   );

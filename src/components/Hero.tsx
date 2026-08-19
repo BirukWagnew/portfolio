@@ -1,150 +1,153 @@
-import React from 'react';
-import { Cloud, ArrowRight, Download, Terminal, MapPin, Server, ShieldCheck, Code } from 'lucide-react';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
+import { ArrowRight, Download, Mail, MapPin } from 'lucide-react';
+import { PERSONAL_INFO, PIPELINE_NODES } from '../data/portfolioData';
+import { GithubIcon, LinkedinIcon } from './Icons';
+import { PipelineFallback } from './PipelineFallback';
+import { Reveal } from './Reveal';
+import { usePrefersReducedMotion } from '../hooks/usePreferences';
+
+// three.js only ships to visitors that will actually see the animation
+const HeroScene = lazy(() => import('../three/HeroScene'));
+
+function supportsWebGL(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(
+      window.WebGLRenderingContext &&
+        (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')),
+    );
+  } catch {
+    return false;
+  }
+}
 
 export const Hero: React.FC = () => {
+  const reducedMotion = usePrefersReducedMotion();
+  const [webglReady, setWebglReady] = useState(false);
+
+  useEffect(() => {
+    setWebglReady(supportsWebGL());
+  }, []);
+
+  const showScene = webglReady && !reducedMotion;
+
   return (
-    <section id="hero" className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-radial-glow grid-background">
-      {/* Background Decorative Ambient Orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-[350px] h-[350px] bg-pink-600/10 rounded-full blur-[100px] pointer-events-none" />
+    <section id="home" className="relative overflow-hidden pt-28 pb-20 sm:pt-32 lg:pt-36 lg:pb-28">
+      <div className="grid-backdrop pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div
+        className="glow-warm pointer-events-none absolute -top-32 right-[-10%] h-[34rem] w-[34rem] rounded-full blur-3xl"
+        aria-hidden="true"
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Left Column: Hero Copy & Actions */}
-          <div className="lg:col-span-7 space-y-8 text-left">
-            {/* Status / Availability Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 text-xs font-mono tracking-wide shadow-inner">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span>Open for Cloud Engineering & Full-Stack Roles</span>
-            </div>
-
-            {/* Main Title & Headline */}
-            <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-                Hi, I'm <span className="text-gradient-primary">{PERSONAL_INFO.name}</span>
-              </h1>
-              <p className="text-xl sm:text-2xl font-semibold text-gray-300 flex flex-wrap items-center gap-2">
-                <Cloud className="w-6 h-6 text-indigo-400 inline" />
-                <span className="text-gradient-cyan">Cloud Engineer</span>
-                <span className="text-gray-500">•</span>
-                <span>Full-Stack Developer</span>
+      <div className="container-page relative">
+        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-6 xl:col-span-7">
+            <Reveal>
+              <p className="inline-flex items-center gap-2 rounded-full border border-[var(--hairline)] bg-[var(--surface)] px-3 py-1.5 font-mono text-[0.7rem] tracking-wide text-body">
+                <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                {PERSONAL_INFO.availability}
               </p>
-            </div>
+            </Reveal>
 
-            {/* Tagline & Location */}
-            <p className="text-lg text-gray-400 max-w-2xl leading-relaxed">
-              {PERSONAL_INFO.tagline}
-            </p>
+            <Reveal delay={80}>
+              <h1 className="mt-6 text-4xl font-semibold leading-[1.05] sm:text-5xl xl:text-6xl">
+                {PERSONAL_INFO.name}
+              </h1>
+              <p className="mt-4 text-lg font-medium sm:text-xl">
+                <span className="text-gold-gradient">Cloud &amp; DevOps Engineer</span>
+                <span className="mx-2 text-dim">/</span>
+                <span className="text-strong">Full-Stack Developer</span>
+              </p>
+            </Reveal>
 
-            <div className="flex items-center gap-2 text-sm text-gray-400 font-medium">
-              <MapPin className="w-4 h-4 text-pink-400" />
-              <span>{PERSONAL_INFO.location}</span>
-              <span className="mx-2 text-gray-600">•</span>
-              <span className="text-gray-300 font-mono">BSIT Graduate 2026</span>
-            </div>
+            <Reveal delay={160}>
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-body sm:text-lg">
+                {PERSONAL_INFO.tagline}
+              </p>
+              <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs text-dim">
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+                  {PERSONAL_INFO.location}
+                </span>
+                <span aria-hidden="true">·</span>
+                <span>BSc Information Technology, Wollo University 2026</span>
+              </p>
+            </Reveal>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <a
-                href="#projects"
-                className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-semibold text-sm shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center gap-2"
-              >
-                <span>View Projects</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
+            <Reveal delay={240}>
+              <div className="mt-9 flex flex-wrap items-center gap-3">
+                <a href="#projects" className="btn btn-primary">
+                  View My Projects
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+                <a href="#contact" className="btn btn-secondary">
+                  <Mail className="h-4 w-4" aria-hidden="true" />
+                  Contact Me
+                </a>
+                <a
+                  href={PERSONAL_INFO.resumeUrl}
+                  download
+                  className="btn btn-ghost hairline border"
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  Download CV
+                </a>
+              </div>
+            </Reveal>
 
-              <a
-                href="#contact"
-                className="px-6 py-3.5 rounded-xl bg-gray-900/90 hover:bg-gray-800 border border-gray-700/80 hover:border-indigo-500/50 text-gray-200 font-semibold text-sm transition-all duration-200 flex items-center gap-2"
-              >
-                <Download className="w-4 h-4 text-indigo-400" />
-                <span>Download CV</span>
-              </a>
-            </div>
+            <Reveal delay={300}>
+              <div className="mt-8 flex items-center gap-3">
+                <a
+                  href={PERSONAL_INFO.socials.github}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="GitHub profile"
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--hairline)] bg-[var(--surface)] text-body transition-colors hover:border-[var(--hairline-strong)] hover:text-accent"
+                >
+                  <GithubIcon className="h-4 w-4" />
+                </a>
+                <a
+                  href={PERSONAL_INFO.socials.linkedin}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="LinkedIn profile"
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--hairline)] bg-[var(--surface)] text-body transition-colors hover:border-[var(--hairline-strong)] hover:text-accent"
+                >
+                  <LinkedinIcon className="h-4 w-4" />
+                </a>
+                <span className="ml-1 font-mono text-[0.7rem] text-dim">
+                  {PERSONAL_INFO.email}
+                </span>
+              </div>
+            </Reveal>
+          </div>
 
-            {/* Core Tech Stack Badges */}
-            <div className="pt-4 border-t border-gray-800/80">
-              <p className="text-xs uppercase font-mono tracking-widest text-gray-500 mb-3">Core Tech Stack</p>
-              <div className="flex flex-wrap gap-2">
-                {['GCP', 'AWS', 'Docker', 'Kubernetes', 'React', 'TypeScript', 'Node.js', 'Python', 'Linux', 'Flutter'].map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-3 py-1 rounded-lg bg-gray-900/80 border border-gray-800 text-gray-300 text-xs font-mono hover:border-indigo-500/40 hover:text-indigo-300 transition-colors"
-                  >
-                    {tech}
-                  </span>
+          <div className="lg:col-span-6 xl:col-span-5">
+            <Reveal delay={200}>
+              <div className="relative h-[320px] sm:h-[400px] lg:h-[460px]">
+                {showScene ? (
+                  <Suspense fallback={<PipelineFallback />}>
+                    <HeroScene />
+                  </Suspense>
+                ) : (
+                  <PipelineFallback />
+                )}
+              </div>
+
+              <ul className="mt-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 font-mono text-[0.68rem] tracking-wide text-dim">
+                {PIPELINE_NODES.map((node, index) => (
+                  <li key={node.label} className="flex items-center gap-2">
+                    <span>{node.label}</span>
+                    {index < PIPELINE_NODES.length - 1 && (
+                      <span aria-hidden="true" className="text-accent opacity-60">
+                        →
+                      </span>
+                    )}
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ul>
+            </Reveal>
           </div>
-
-          {/* Right Column: Code Terminal / Card Visual */}
-          <div className="lg:col-span-5 relative">
-            <div className="glass-card rounded-2xl p-6 border border-gray-800 shadow-2xl relative z-10 overflow-hidden group">
-              {/* Terminal Window Bar */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-800/80">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                  <span className="text-xs font-mono text-gray-400 ml-2">biruk@cloud-station:~</span>
-                </div>
-                <Terminal className="w-4 h-4 text-indigo-400" />
-              </div>
-
-              {/* Code Snippet Content */}
-              <div className="font-mono text-xs sm:text-sm text-left space-y-2 leading-relaxed">
-                <p className="text-purple-400">
-                  <span className="text-pink-400">const</span> engineer = {'{'}
-                </p>
-                <p className="pl-4 text-gray-300">
-                  name: <span className="text-emerald-300">"{PERSONAL_INFO.name}"</span>,
-                </p>
-                <p className="pl-4 text-gray-300">
-                  education: <span className="text-emerald-300">"BSIT, Wollo University (2026)"</span>,
-                </p>
-                <p className="pl-4 text-gray-300">
-                  focus: [<span className="text-indigo-300">"Cloud"</span>, <span className="text-indigo-300">"DevOps"</span>, <span className="text-indigo-300">"Full-Stack"</span>, <span className="text-indigo-300">"AI"</span>],
-                </p>
-                <p className="pl-4 text-gray-300">
-                  cloudPlatforms: [<span className="text-amber-300">"GCP"</span>, <span className="text-amber-300">"AWS"</span>],
-                </p>
-                <p className="pl-4 text-gray-300">
-                  containerization: [<span className="text-cyan-300">"Docker"</span>, <span className="text-cyan-300">"Kubernetes"</span>],
-                </p>
-                <p className="pl-4 text-gray-300">
-                  status: <span className="text-emerald-400">"Ready to Deploy Solutions 🚀"</span>
-                </p>
-                <p className="text-purple-400">{'}'};</p>
-              </div>
-            </div>
-
-            {/* Quick Stat Pill Cards Below Terminal */}
-            <div className="grid grid-cols-3 gap-3 mt-4">
-              <div className="glass-card p-3 rounded-xl border border-gray-800 text-center">
-                <div className="text-indigo-400 flex justify-center mb-1"><Server className="w-5 h-5" /></div>
-                <div className="text-lg font-bold text-white">GCP / AWS</div>
-                <div className="text-[10px] font-mono text-gray-400">Cloud Ready</div>
-              </div>
-              <div className="glass-card p-3 rounded-xl border border-gray-800 text-center">
-                <div className="text-purple-400 flex justify-center mb-1"><Code className="w-5 h-5" /></div>
-                <div className="text-lg font-bold text-white">React + Node</div>
-                <div className="text-[10px] font-mono text-gray-400">Full-Stack</div>
-              </div>
-              <div className="glass-card p-3 rounded-xl border border-gray-800 text-center">
-                <div className="text-pink-400 flex justify-center mb-1"><ShieldCheck className="w-5 h-5" /></div>
-                <div className="text-lg font-bold text-white">CI / CD</div>
-                <div className="text-[10px] font-mono text-gray-400">DevOps Flow</div>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </section>
